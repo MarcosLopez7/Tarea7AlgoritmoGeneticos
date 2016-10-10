@@ -16,8 +16,9 @@ int *cruza(int *, int *, int);
 
 int main(int argc, const char *argv[]) {
 
-    if (argc != 2) {
+    if (argc != 3) {
         cout << "Se esperaba un argumento n que indica el tamaño del tablero de ajedrez n*n\n";
+        cout << " y un 1 o 2, 1 para la mutacion con suma de 1, 2 para dos suma de 3\n";
         exit(-1);
     }
 
@@ -27,6 +28,10 @@ int main(int argc, const char *argv[]) {
     if (n <= 2) {
         cout << "n tiene que ser mayor a 2\n";
         exit(-1);
+    }
+
+    if ( atoi(argv[2]) != 1 && atoi(argv[2]) != 2) {
+        cout << "Es un numero entre 1 y 2 el segundo parametro\n";
     }
 
     int **cromosomas = (int **) malloc(CROMO_NUM * sizeof(int *));
@@ -97,15 +102,29 @@ int main(int argc, const char *argv[]) {
         cromosomas[2] = temp3;
         cromosomas[3] = temp4;
 
-        for (int i = 0; i < CROMO_NUM; ++i) {
-            int numrand = rand() % (n + 1);
-            if (numrand == n) continue;
-            cromosomas[i][numrand] = (cromosomas[i][numrand] + 1) % n;
+        if (atoi(argv[2]) == 1) {
+            //Sacamos un númeo entre 0 a n, ese número es el índice del cromosoma y se le va sumar 1, si el número random es
+            //n, no se hace una mutación al cromosoma
+            for (int i = 0; i < CROMO_NUM; ++i) {
+                int numrand = rand() % (n + 1);
+                if (numrand == n) continue;
+                cromosomas[i][numrand] = (cromosomas[i][numrand] + 1) % n;
+            }
+        }
+
+        if (atoi(argv[2]) == 2) {
+            //suma dos elementos del cromosoma con 3
+            for (int i = 0; i < CROMO_NUM; ++i) {
+                int numrand = rand() % (n);
+                cromosomas[i][numrand] = (cromosomas[i][numrand] + 3) % n;
+                numrand = rand() % (n);
+                cromosomas[i][numrand] = (cromosomas[i][numrand] + 3) % n;
+            }
         }
 
         cont++;
         cout << "Vamos en la iteracion " << cont << ", aun nada\n";
-//        sleep(1);
+        //sleep(1);
     }
 
     free(fitness);
@@ -154,32 +173,6 @@ float evaluar(int *cromosoma) {
         }
         
         if (reinaenlados) continue;
-
-        int salida = cromosoma[i] - i;
-
-        //Evaluar diagonal izquierda abajo
-        /*
-        if (salida > 0) {
-            for (int j = salida; j < n; ++j) {
-                if (j == i) continue;
-
-                if (tablero[j][j-salida] == 1) {
-                    malas++;
-                    reinadiagonalI = true;
-                    break;
-                }
-            }
-        } else {
-            for (int j = abs(salida); j < n; ++j) {
-                if (j == i) continue;
-
-                if (tablero[j][j+salida] == 1) {
-                    malas++;
-                    reinadiagonalI = true;
-                    break;
-                }
-            }
-        }*/
 
         int x = i;
         int y = cromosoma[i];
